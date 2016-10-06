@@ -309,6 +309,11 @@ if [[ -z "${DEVICE}" ]]; then
     exit 1
 fi
 
+# Symlink may cause trouble with lsblk and blkid
+if [[ -L "${DEVICE}" ]]; then
+    DEVICE=$(readlink -f "${DEVICE}")
+fi
+
 if ! [[ $(lsblk -n -d -o TYPE "${DEVICE}") =~ ^(disk|loop|lvm)$ ]]; then
     echo "$0: Target block device (${DEVICE}) is not a full disk." >&2
     exit 1
